@@ -47,12 +47,15 @@ class Post extends Component {
     const {post} = this.props;
     const {downloadUrl, isMouseOver} = this.state;
 
+    console.log(post);
+
     let content;
     if (post.isProcessingComplete) {
       content = (
         <div className={cs.PostImage}>
           {isMouseOver && this._renderNotes()}
           <img src={downloadUrl} />
+          <div className={cs.PostCredit}>{post.userDisplayName}</div>
         </div>
       );
     } else {

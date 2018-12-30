@@ -115,10 +115,15 @@ class App extends Component {
 
     const storageUrl = `gs://werm-pix.appspot.com/posts/${filename}`;
 
+    const userDisplayName = auth.currentUser.displayName;
+    const userId = auth.currentUser.uid;
+
     await db
       .collection('posts')
       .doc()
       .set({
+        userDisplayName,
+        userId,
         createdAt: new Date(),
         storageUrl,
       });
