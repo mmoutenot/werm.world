@@ -1,6 +1,7 @@
 .Post {
   width: 30rem;
   max-width: 100%;
+  min-height: 20rem;
   box-sizing: border-box;
   margin: 0 auto;
 }
@@ -28,6 +29,7 @@
   box-sizing: border-box;
   border: none;
   overflow-y: auto;
+  text-align: left;
 }
 
 .PostCredit {

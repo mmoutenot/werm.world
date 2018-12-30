@@ -54,7 +54,7 @@ class App extends Component {
 
     return (
       <div className={cs.App}>
-        <h1>wermpix</h1>
+        <h1>werm.world</h1>
         <FileUploader
           accept="image/*"
           name="post"

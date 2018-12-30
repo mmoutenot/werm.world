@@ -33,7 +33,7 @@ class Post extends Component {
           notes.map(n => (
             <p key={n.id}>
               {n.text}
-              <br />~ <b>{n.userDisplayName}</b>
+              <br />~ <b>{n.userDisplayName}</b> {moment(n.createdAt.toDate()).fromNow()}
             </p>
           ))
         ) : (
@@ -53,7 +53,9 @@ class Post extends Component {
         <div className={cs.PostImage}>
           {isMouseOver && this._renderNotes()}
           <img src={downloadUrl} />
-          <div className={cs.PostCredit}>{post.userDisplayName}</div>
+          <div className={cs.PostCredit}>
+            <b>{post.userDisplayName}</b> - {moment(post.createdAt.toDate()).format('l')}
+          </div>
         </div>
       );
     } else {
