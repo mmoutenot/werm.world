@@ -2,6 +2,8 @@ import React, {Component} from 'react';
 import firebase from 'firebase/app';
 import 'firebase/storage';
 
+import cs from './Post.module.css';
+
 class Post extends Component {
   state = {
     downloadUrl: null,
@@ -17,7 +19,15 @@ class Post extends Component {
     const {post} = this.props;
     const {downloadUrl} = this.state;
 
-    return <img width={400} src={downloadUrl} />;
+    return (
+      <div className={cs.Post}>
+        {post.isProcessingComplete ? (
+          <img className={cs.PostImage} src={downloadUrl} />
+        ) : (
+          <span className={cs.PostProcessing}>Processing...</span>
+        )}
+      </div>
+    );
   }
 }
 

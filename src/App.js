@@ -28,7 +28,7 @@ class App extends Component {
   };
 
   componentDidMount () {
-    this._listPosts();
+    this._listenToPosts();
   }
 
   render () {
@@ -58,11 +58,12 @@ class App extends Component {
     );
   }
 
-  async _listPosts () {
-    const querySnapshot = await db.collection('posts').get();
-    let posts = [];
-    querySnapshot.forEach(doc => posts.push({id: doc.id, ...doc.data()}));
-    this.setState({posts});
+  _listenToPosts () {
+    db.collection('posts').onSnapshot(snapshot => {
+      let posts = [];
+      snapshot.forEach(doc => posts.push({id: doc.id, ...doc.data()}));
+      this.setState({posts});
+    });
   }
 
   _onUploadStart = () => this.setState({isUploading: true, progress: 0});
@@ -84,7 +85,7 @@ class App extends Component {
         storageUrl,
       });
 
-    this._listPosts();
+    this._listenToPosts();
   };
 }
 

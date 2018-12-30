@@ -1,0 +1,15 @@
+.Post {
+  width: 40rem;
+  border: 1px dashed gainsboro;
+}
+
+.PostImage {
+  width: 100%;
+}
+
+.PostProcessing {
+  height: 20rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

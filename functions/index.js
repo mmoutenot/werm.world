@@ -1,10 +1,14 @@
 const functions = require('firebase-functions');
-const mkdirp = require('mkdirp-promise');
-const gcs = require('@google-cloud/storage')();
-const spawn = require('child-process-promise').spawn;
 const path = require('path');
 const os = require('os');
 const fs = require('fs');
+const mkdirp = require('mkdirp-promise');
+
+const admin = require('firebase-admin');
+admin.initializeApp();
+const db = admin.firestore();
+const gcs = require('@google-cloud/storage')();
+const {spawn} = require('child-process-promise');
 
 exports.rotateUsingExif = functions.storage.object().onFinalize(object => {
   const filePath = object.name;
@@ -47,6 +51,19 @@ exports.rotateUsingExif = functions.storage.object().onFinalize(object => {
       console.log('image uploaded to Storage at', filePath);
       // Once the image has been converted delete the local files to free up disk space.
       fs.unlinkSync(tempLocalFile);
-      return console.log('Deleted local file', filePath);
+      console.log('Deleted local file', filePath);
+
+      // mark post document as done processing
+      return db
+        .collection('posts')
+        .where('storageUrl', '==', `gs://werm-pix.appspot.com/${filePath}`)
+        .select()
+        .get()
+        .then(querySnapshot => {
+          querySnapshot.forEach(doc => {
+            const ref = db.collection('posts').doc(doc.id);
+            ref.update({isProcessingComplete: true});
+          });
+        });
     });
 });
