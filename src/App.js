@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 import firebase from 'firebase/app';
 import 'firebase/firestore';
+import 'firebase/auth';
+import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
 import FileUploader from 'react-firebase-file-uploader';
 
 import Post from './Post';
@@ -15,33 +17,44 @@ var config = {
   messagingSenderId: '512147999490',
 };
 firebase.initializeApp(config);
+const auth = firebase.auth();
 const storage = firebase.storage();
 const db = firebase.firestore();
 const settings = {timestampsInSnapshots: true};
 db.settings(settings);
+
+const uiConfig = {
+  // Popup signin flow rather than redirect flow.
+  signInFlow: 'popup',
+  // Redirect to /signedIn after sign in is successful. Alternatively you can provide a callbacks.signInSuccess function.
+  signInSuccessUrl: '/',
+  // We will display Google and Facebook as auth providers.
+  signInOptions: [firebase.auth.EmailAuthProvider.PROVIDER_ID],
+};
 
 class App extends Component {
   state = {
     posts: null,
     isUploading: false,
     progress: null,
+    isLoadingUser: true,
   };
 
   componentDidMount () {
     this._listenToPosts();
+    this._listenToAuth();
   }
 
-  render () {
+  _renderAuth () {
+    return <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={auth} />;
+  }
+
+  _renderPosts () {
     const {posts, isUploading, progress} = this.state;
 
     return (
       <div>
         <h1>wermpix</h1>
-        <div>
-          <ul>
-            <li>upload pix</li>
-          </ul>
-        </div>
         <FileUploader
           accept="image/*"
           name="post"
@@ -53,16 +66,41 @@ class App extends Component {
           onProgress={this._onProgress}
         />
         {isUploading && <p>Progress: {progress}</p>}
-        <div>{posts && posts.map(p => <Post key={p.id} post={p} storage={storage} />)}</div>
+        <div>
+          {posts &&
+            posts.map(p => <Post key={p.id} post={p} storage={storage} db={db} auth={auth} />)}
+        </div>
       </div>
     );
   }
 
+  render () {
+    const {user, isLoadingUser} = this.state;
+
+    if (!isLoadingUser && !user) {
+      return this._renderAuth();
+    } else {
+      return this._renderPosts();
+    }
+  }
+
   _listenToPosts () {
-    db.collection('posts').onSnapshot(snapshot => {
-      let posts = [];
-      snapshot.forEach(doc => posts.push({id: doc.id, ...doc.data()}));
-      this.setState({posts});
+    db.collection('posts')
+      .orderBy('createdAt', 'desc')
+      .onSnapshot(snapshot => {
+        let posts = [];
+        snapshot.forEach(doc => posts.push({id: doc.id, ...doc.data()}));
+        this.setState({posts});
+      });
+  }
+
+  _listenToAuth () {
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        this.setState({user, isLoadingUser: false});
+      } else {
+        this.setState({user: null, isLoadingUser: false});
+      }
     });
   }
 
@@ -84,8 +122,6 @@ class App extends Component {
         createdAt: new Date(),
         storageUrl,
       });
-
-    this._listenToPosts();
   };
 }
 
