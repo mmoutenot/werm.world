@@ -53,7 +53,7 @@ class App extends Component {
     const {posts, isUploading, progress} = this.state;
 
     return (
-      <div>
+      <div className={cs.App}>
         <h1>wermpix</h1>
         <FileUploader
           accept="image/*"
@@ -66,7 +66,7 @@ class App extends Component {
           onProgress={this._onProgress}
         />
         {isUploading && <p>Progress: {progress}</p>}
-        <div>
+        <div className={cs.AppPosts}>
           {posts &&
             posts.map(p => <Post key={p.id} post={p} storage={storage} db={db} auth={auth} />)}
         </div>

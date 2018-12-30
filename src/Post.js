@@ -47,8 +47,6 @@ class Post extends Component {
     const {post} = this.props;
     const {downloadUrl, isMouseOver} = this.state;
 
-    console.log(post);
-
     let content;
     if (post.isProcessingComplete) {
       content = (
