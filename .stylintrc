@@ -1,0 +1,98 @@
+{
+  "brackets": {
+    "expect": "never",
+    "error": true
+  },
+  "colons": {
+    "expect": "never",
+    "error": true
+  },
+  "semicolons": {
+    "expect": "never",
+    "error": true
+  },
+  "commaSpace": {
+    "expect": "always",
+    "error": true
+  },
+  "commentSpace": {
+    "expect": "always",
+    "error": true
+  },
+  "cssLiteral": {
+    "expect": "never",
+    "error": true
+  },
+  "depthLimit": {
+    "expect": 4,
+    "error": true
+  },
+  "efficient": {
+    "expect": "always",
+    "error": true
+  },
+  "indentPref": {
+    "expect": 2,
+    "error": true
+  },
+  "leadingZero": {
+    "expect": "never",
+    "error": true
+  },
+  "parenSpace": {
+    "expect": false,
+    "error": true
+  },
+  "placeholders": {
+    "expect": "always",
+    "error": true
+  },
+  "quotePref": {
+    "expect": false,
+    "error": true
+  },
+  "prefixVarsWithDollar": {
+    "expect": "always",
+    "error": true
+  },
+  "trailingWhitespace": {
+    "expect": "never",
+    "error": true
+  },
+  "universal": {
+    "expect": false,
+    "error": true
+  },
+  "stackedProperties": {
+    "expect": "never",
+    "error": true
+  },
+  "zeroUnits": {
+    "expect": "never",
+    "error": true
+  },
+  "zIndexNormalize": {
+    "value": false,
+    "error": true
+  },
+  "colors": {
+    "expect": "always",
+    "warning": true
+  },
+  "valid": {
+    "expect": true,
+    "warning": true
+  },
+  "sortOrder": {
+    "expect": "alphabetical",
+    "warning": true
+  },
+  "groupOutputByFile": true,
+  "exclude": ["app/assets/stylesheets/**/*", "**/node_modules/**/*"],
+  "reporterOptions": {
+    "columns": ["lineData", "severity", "description", "rule"],
+    "columnSplitter": "  ",
+    "showHeaders": false,
+    "truncate": true
+  }
+}

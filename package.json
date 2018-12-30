@@ -3,18 +3,28 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "firebase": "^5.7.2",
     "react": "^16.7.0",
     "react-dom": "^16.7.0",
+    "react-firebase-file-uploader": "^2.4.2",
     "react-scripts": "2.1.2"
+  },
+  "devDependencies": {
+    "firebase-tools": "^6.2.2",
+    "lint-staged": "^8.1.0",
+    "prettier": "^1.15.3"
+  },
+  "prettier": {
+    "trailingComma": "es5",
+    "singleQuote": true,
+    "bracketSpacing": false,
+    "printWidth": 100
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
-  },
-  "eslintConfig": {
-    "extends": "react-app"
   },
   "browserslist": [
     ">0.2%",
