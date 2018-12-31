@@ -124,6 +124,7 @@ class Post extends Component {
         userDisplayName,
         userId,
         text,
+        seenByUserIds: [userId],
       });
   };
 
