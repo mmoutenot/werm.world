@@ -78,6 +78,8 @@ class Posts extends React.Component {
           {posts &&
             posts.map(p => <Post key={p.id} post={p} storage={storage} db={db} auth={auth} />)}
         </div>
+
+        <div>~ that is all ~</div>
       </div>
     );
   }
