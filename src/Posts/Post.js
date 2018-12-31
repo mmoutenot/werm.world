@@ -2,16 +2,15 @@ import React, {Component} from 'react';
 import firebase from 'firebase/app';
 import 'firebase/storage';
 import moment from 'moment';
-import classnames from 'classnames';
 
 import cs from './Post.module.css';
-import {not} from 'ip';
 
 class Post extends Component {
   state = {
     notes: null,
     downloadUrl: null,
     isMouseOver: false,
+    hasUnreadNotes: false,
   };
 
   async componentDidMount () {
@@ -25,6 +24,8 @@ class Post extends Component {
 
   _renderNotes () {
     const {notes} = this.state;
+
+    this._markNotesAsSeen();
 
     return (
       <div className={cs.PostNotes}>
@@ -45,12 +46,15 @@ class Post extends Component {
 
   render () {
     const {post} = this.props;
-    const {notes, downloadUrl, isMouseOver} = this.state;
+    const {notes, downloadUrl, isMouseOver, hasUnreadNotes} = this.state;
+
+    console.log(hasUnreadNotes);
 
     let content;
     if (post.isProcessingComplete) {
       content = (
         <div className={cs.PostImage}>
+          {hasUnreadNotes && <div className={cs.UnreadNote} />}
           {isMouseOver && this._renderNotes()}
           <img src={downloadUrl} />
           <div className={cs.PostCredit}>
@@ -73,13 +77,25 @@ class Post extends Component {
   }
 
   _listenToNotes () {
-    const {post, db} = this.props;
+    const {post, db, auth} = this.props;
+
+    const userId = auth.currentUser.uid;
+
     db.collection(`posts/${post.id}/notes`)
       .orderBy('createdAt', 'desc')
       .onSnapshot(snapshot => {
         let notes = [];
-        snapshot.forEach(doc => notes.push({id: doc.id, ...doc.data()}));
-        this.setState({notes});
+        let hasUnreadNotes = false;
+        snapshot.forEach(doc => {
+          let note = {id: doc.id, ...doc.data()};
+
+          if (!note.seenByUserIds || note.seenByUserIds.indexOf(userId) === -1) {
+            note.isUnread = true;
+            hasUnreadNotes = true;
+          }
+          notes.push(note);
+        });
+        this.setState({notes, hasUnreadNotes});
       });
   }
 
@@ -111,6 +127,21 @@ class Post extends Component {
         userId,
         text,
       });
+  };
+
+  _markNotesAsSeen = () => {
+    const {post, db, auth} = this.props;
+    const {notes} = this.state;
+
+    const userId = auth.currentUser.uid;
+
+    notes.forEach(n => {
+      db.collection(`posts/${post.id}/notes`)
+        .doc(n.id)
+        .update({
+          seenByUserIds: firebase.firestore.FieldValue.arrayUnion(userId),
+        });
+    });
   };
 }
 
