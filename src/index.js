@@ -35,9 +35,6 @@ class App extends React.Component {
   };
 
   componentDidMount () {
-    alert(
-      'Marshall hit his free server\'s usage quota with all these great images! werm.world will be 💀 until the quota resets.'
-    );
     this._unsubscribeToAuth = this._listenToAuth();
   }
 

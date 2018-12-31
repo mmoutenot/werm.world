@@ -43,7 +43,7 @@ exports.processImage = functions.storage.object().onFinalize(object => {
         '-quality',
         '75',
         '-resize',
-        '1200x',
+        '1200x1200>',
         tempLocalFile,
       ]);
     })
