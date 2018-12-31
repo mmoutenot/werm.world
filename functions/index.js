@@ -10,7 +10,7 @@ const db = admin.firestore();
 const gcs = require('@google-cloud/storage')();
 const {spawn} = require('child-process-promise');
 
-exports.rotateUsingExif = functions.storage.object().onFinalize(object => {
+exports.processImage = functions.storage.object().onFinalize(object => {
   const filePath = object.name;
   const bucketName = object.bucket;
   const metadata = object.metadata;
@@ -37,7 +37,15 @@ exports.rotateUsingExif = functions.storage.object().onFinalize(object => {
     .then(() => {
       console.log('The file has been downloaded to', tempLocalFile);
       // Convert the image using ImageMagick.
-      return spawn('convert', [tempLocalFile, '-auto-orient', '-quality', '75', tempLocalFile]);
+      return spawn('convert', [
+        tempLocalFile,
+        '-auto-orient',
+        '-quality',
+        '75',
+        '-resize',
+        '1200x',
+        tempLocalFile,
+      ]);
     })
     .then(() => {
       console.log('rotated image created at', tempLocalFile);
