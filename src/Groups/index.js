@@ -18,6 +18,7 @@ class Groups extends React.Component {
     return (
       <div className={cs.Groups}>
         <h1>werm.world</h1>
+        <img src={require('./logo.png')} alt="logo" height={60} />
         {groups ? (
           <div className={cs.GroupList}>
             <h4>Your groups</h4>
