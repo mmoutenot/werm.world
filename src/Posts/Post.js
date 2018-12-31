@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import firebase from 'firebase/app';
 import 'firebase/storage';
 import moment from 'moment';
+import classnames from 'classnames';
 
 import cs from './Post.module.css';
 import {not} from 'ip';
@@ -23,7 +24,6 @@ class Post extends Component {
   }
 
   _renderNotes () {
-    const {post} = this.props;
     const {notes} = this.state;
 
     return (
@@ -45,7 +45,7 @@ class Post extends Component {
 
   render () {
     const {post} = this.props;
-    const {downloadUrl, isMouseOver} = this.state;
+    const {notes, downloadUrl, isMouseOver} = this.state;
 
     let content;
     if (post.isProcessingComplete) {
@@ -55,6 +55,9 @@ class Post extends Component {
           <img src={downloadUrl} />
           <div className={cs.PostCredit}>
             <b>{post.userDisplayName}</b> - {moment(post.createdAt.toDate()).format('l')}
+            <div className={cs.PostCreditNoteCount}>
+              {notes ? `${notes.length} note${notes.length > 1 ? 's' : ''}` : '- notes'}
+            </div>
           </div>
         </div>
       );

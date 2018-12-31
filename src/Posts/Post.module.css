@@ -41,6 +41,10 @@
   font-size: 10px;
 }
 
+.PostCreditNoteCount {
+  text-align: right;
+}
+
 .PostNotes p {
   margin: 2rem 0;
 }
