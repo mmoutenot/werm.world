@@ -9,29 +9,48 @@ import cs from './styles.module.css';
 class Posts extends React.Component {
   state = {
     group: null,
+    isJoiningGroup: false,
+
     posts: null,
     isUploading: false,
     progress: null,
   };
 
   componentDidMount () {
-    this._listenToGroup();
-    this._listenToPosts();
+    this._unsubscribeToGroup = this._listenToGroup();
+    this._unsubscribeToPosts = this._listenToPosts();
+  }
+
+  componentWillUnmount () {
+    if (this._unsubscribeToGroup) {
+      this._unsubscribeToGroup();
+    }
+
+    if (this._unsubscribeToPosts) {
+      this._unsubscribeToPosts();
+    }
   }
 
   _renderJoinGroup () {
-    const {group, auth} = this.props;
-
-    if (!group) {
-      return;
-    }
+    const {auth} = this.props;
+    const {group, isJoiningGroup} = this.state;
 
     const isUserInGroup = group.userIds.indexOf(auth.currentUser.uid) > -1;
     if (isUserInGroup) {
       return;
     }
 
-    return <button onClick={this._onClickJoinGroup}>join group</button>;
+    return (
+      <div style={{marginBottom: 20}}>
+        {isJoiningGroup ? (
+          <span>Joining...</span>
+        ) : (
+          <button onClick={this._onClickJoinGroup}>
+            <h4>join group</h4>
+          </button>
+        )}
+      </div>
+    );
   }
 
   render () {
@@ -43,6 +62,7 @@ class Posts extends React.Component {
         <h1>
           <Link to="/">werm.world</Link>/{group ? group.name : '-----'}
         </h1>
+        {group && this._renderJoinGroup()}
         <FileUploader
           accept="image/*"
           name="post"
@@ -65,16 +85,17 @@ class Posts extends React.Component {
   _listenToGroup () {
     const {db, groupId} = this.props;
 
-    db.collection('groups')
+    return db
+      .collection('groups')
       .doc(groupId)
-      .get()
-      .then(doc => this.setState({group: {id: doc.id, ...doc.data()}}));
+      .onSnapshot(doc => this.setState({group: {id: doc.id, ...doc.data()}}));
   }
 
   _listenToPosts () {
     const {db, groupId} = this.props;
 
-    db.collection('posts')
+    return db
+      .collection('posts')
       .where('groupId', '==', groupId)
       .orderBy('createdAt', 'desc')
       .onSnapshot(snapshot => {
@@ -87,10 +108,15 @@ class Posts extends React.Component {
   _onClickJoinGroup = () => {
     const {groupId, db, auth} = this.props;
 
-    db.collection('group')
+    this.setState({isJoiningGroup: true});
+
+    db.collection('groups')
       .doc(groupId)
       .update({
         userIds: firebase.firestore.FieldValue.arrayUnion(auth.currentUser.uid),
+      })
+      .then(() => {
+        this.setState({isJoiningGroup: false});
       });
   };
 

@@ -26,15 +26,6 @@ const db = firebase.firestore();
 const settings = {timestampsInSnapshots: true};
 db.settings(settings);
 
-const AUTH_CONFIG = {
-  // Popup signin flow rather than redirect flow.
-  signInFlow: 'popup',
-  // Redirect to /signedIn after sign in is successful. Alternatively you can provide a callbacks.signInSuccess function.
-  signInSuccessUrl: '/',
-  // We will display Google and Facebook as auth providers.
-  signInOptions: [firebase.auth.EmailAuthProvider.PROVIDER_ID],
-};
-
 const firebaseProps = {auth, storage, db};
 
 class App extends React.Component {
@@ -44,11 +35,22 @@ class App extends React.Component {
   };
 
   componentDidMount () {
-    this._listenToAuth();
+    this._unsubscribeToAuth = this._listenToAuth();
+  }
+
+  componentWillUnmount () {
+    if (this._unsubscribeToAuth) {
+      this._unsubscribeToAuth();
+    }
   }
 
   _renderAuth () {
-    return <StyledFirebaseAuth uiConfig={AUTH_CONFIG} firebaseAuth={auth} />;
+    const authConfig = {
+      signInFlow: 'popup',
+      signInSuccessUrl: window.location.pathname,
+      signInOptions: [firebase.auth.EmailAuthProvider.PROVIDER_ID],
+    };
+    return <StyledFirebaseAuth uiConfig={authConfig} firebaseAuth={auth} />;
   }
 
   render () {
@@ -72,7 +74,7 @@ class App extends React.Component {
   }
 
   _listenToAuth () {
-    auth.onAuthStateChanged(user => {
+    return auth.onAuthStateChanged(user => {
       if (user) {
         this.setState({user, isLoadingUser: false});
       } else {
