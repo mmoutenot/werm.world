@@ -1,6 +1,7 @@
 import React from 'react';
 import FileUploader from 'react-firebase-file-uploader';
 import {Link} from 'react-router-dom';
+import firebase from 'firebase/app';
 
 import Post from './Post';
 import cs from './styles.module.css';
@@ -16,6 +17,16 @@ class Posts extends React.Component {
   componentDidMount () {
     this._listenToGroup();
     this._listenToPosts();
+  }
+
+  _renderJoinGroup () {
+    const {group, auth} = this.props;
+    const isUserInGroup = group.userIds.indexOf(auth.currentUser.uid) > -1;
+    if (isUserInGroup) {
+      return;
+    }
+
+    return <button onClick={this._onClickJoinGroup}>join group</button>;
   }
 
   render () {
@@ -67,6 +78,16 @@ class Posts extends React.Component {
         this.setState({posts});
       });
   }
+
+  _onClickJoinGroup = () => {
+    const {groupId, db, auth} = this.props;
+
+    db.collection('group')
+      .doc(groupId)
+      .update({
+        userIds: firebase.firestore.FieldValue.arrayUnion(auth.currentUser.uid),
+      });
+  };
 
   _onUploadStart = () => this.setState({isUploading: true, progress: 0});
   _onProgress = progress => this.setState({progress});

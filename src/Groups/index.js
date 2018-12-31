@@ -26,7 +26,7 @@ class Groups extends React.Component {
                 <Link to={`/${g.id}`}>{g.name}</Link>
               </div>
             ))}
-            <button onClick={this._onCreateGroupClick}>Create a group</button>
+            <button onClick={this._onClickCreateGroup}>Create a group</button>
           </div>
         ) : (
           <span>Loading...</span>
@@ -48,7 +48,7 @@ class Groups extends React.Component {
       });
   }
 
-  _onCreateGroupClick = () => {
+  _onClickCreateGroup = () => {
     const {db, auth} = this.props;
 
     const groupName = prompt('Enter new group name');
