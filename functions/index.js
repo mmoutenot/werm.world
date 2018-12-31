@@ -37,7 +37,7 @@ exports.rotateUsingExif = functions.storage.object().onFinalize(object => {
     .then(() => {
       console.log('The file has been downloaded to', tempLocalFile);
       // Convert the image using ImageMagick.
-      return spawn('convert', [tempLocalFile, '-auto-orient', tempLocalFile]);
+      return spawn('convert', [tempLocalFile, '-auto-orient', '-quality', '75', tempLocalFile]);
     })
     .then(() => {
       console.log('rotated image created at', tempLocalFile);
