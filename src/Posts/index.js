@@ -14,11 +14,17 @@ class Posts extends React.Component {
     posts: null,
     isUploading: false,
     progress: null,
+
+    postCursor: 5,
   };
 
   componentDidMount () {
     this._unsubscribeToGroup = this._listenToGroup();
     this._unsubscribeToPosts = this._listenToPosts();
+
+    if (window) {
+      window.onscroll = this._onScroll;
+    }
   }
 
   componentWillUnmount () {
@@ -55,7 +61,7 @@ class Posts extends React.Component {
 
   render () {
     const {storage, db, auth} = this.props;
-    const {group, posts, isUploading, progress} = this.state;
+    const {group, posts, postCursor, isUploading, progress} = this.state;
 
     return (
       <div className={cs.Posts}>
@@ -76,7 +82,9 @@ class Posts extends React.Component {
         {isUploading && <p>Progress: {progress}</p>}
         <div className={cs.PostList}>
           {posts &&
-            posts.map(p => <Post key={p.id} post={p} storage={storage} db={db} auth={auth} />)}
+            posts
+              .slice(0, postCursor)
+              .map(p => <Post key={p.id} post={p} storage={storage} db={db} auth={auth} />)}
         </div>
 
         <div>~ that is all ~</div>
@@ -106,6 +114,17 @@ class Posts extends React.Component {
         this.setState({posts});
       });
   }
+
+  _onScroll = () => {
+    const {posts, postCursor} = this.state;
+    if (posts.length <= postCursor) {
+      return;
+    }
+
+    if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+      this.setState({postCursor: postCursor + 5});
+    }
+  };
 
   _onClickJoinGroup = () => {
     const {groupId, db, auth} = this.props;
