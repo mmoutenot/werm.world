@@ -21,6 +21,11 @@ class Posts extends React.Component {
 
   _renderJoinGroup () {
     const {group, auth} = this.props;
+
+    if (!group) {
+      return;
+    }
+
     const isUserInGroup = group.userIds.indexOf(auth.currentUser.uid) > -1;
     if (isUserInGroup) {
       return;
