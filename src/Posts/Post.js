@@ -92,6 +92,11 @@ class Post extends Component {
     const {post, db, auth} = this.props;
 
     const text = prompt('Enter your note');
+
+    if (!text || !text.length) {
+      return;
+    }
+
     const userDisplayName = auth.currentUser.displayName;
     const userId = auth.currentUser.uid;
 
