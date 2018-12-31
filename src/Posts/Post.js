@@ -133,13 +133,15 @@ class Post extends Component {
 
     const userId = auth.currentUser.uid;
 
-    notes.forEach(n => {
-      db.collection(`posts/${post.id}/notes`)
-        .doc(n.id)
-        .update({
-          seenByUserIds: firebase.firestore.FieldValue.arrayUnion(userId),
-        });
-    });
+    if (notes && notes.length > 0) {
+      notes.forEach(n => {
+        db.collection(`posts/${post.id}/notes`)
+          .doc(n.id)
+          .update({
+            seenByUserIds: firebase.firestore.FieldValue.arrayUnion(userId),
+          });
+      });
+    }
   };
 }
 
