@@ -1,15 +1,16 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {BrowserRouter as Router, Route, Link} from 'react-router-dom';
+import {BrowserRouter as Router, Route, Switch} from 'react-router-dom';
 import firebase from 'firebase/app';
 import 'firebase/firestore';
 import 'firebase/auth';
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
 
-import './index.css';
-import Posts from './Posts';
-import Groups from './Groups';
+import Posts from './pages/Posts';
+import Groups from './pages/Groups';
+import NewMultiPost from './pages/NewMultiPost';
 import * as serviceWorker from './serviceWorker';
+import './index.css';
 
 var config = {
   apiKey: 'AIzaSyDmmyClhlagKmtWozeb15QkABbdBQIYvbc',
@@ -61,10 +62,17 @@ class App extends React.Component {
         {user && !isLoadingUser ? (
           <>
             <Route exact path="/" render={props => <Groups {...firebaseProps} />} />
-            <Route
-              path="/:groupId"
-              render={props => <Posts groupId={props.match.params.groupId} {...firebaseProps} />}
-            />
+            <Switch>
+              <Route
+                exact
+                path="/newMultiPost"
+                render={props => <NewMultiPost {...firebaseProps} />}
+              />
+              <Route
+                path="/:groupId"
+                render={props => <Posts groupId={props.match.params.groupId} {...firebaseProps} />}
+              />
+            </Switch>
           </>
         ) : (
           this._renderAuth()
@@ -89,4 +97,4 @@ ReactDOM.render(<App />, document.getElementById('root'));
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: http://bit.ly/CRA-PWA
-serviceWorker.unregister();
+serviceWorker.register();

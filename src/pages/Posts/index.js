@@ -1,8 +1,8 @@
 import React from 'react';
-import FileUploader from 'react-firebase-file-uploader';
 import {Link} from 'react-router-dom';
 import firebase from 'firebase/app';
 
+import NewPost from '../../components/NewPost';
 import Post from './Post';
 import cs from './styles.module.css';
 
@@ -12,8 +12,6 @@ class Posts extends React.Component {
     isJoiningGroup: false,
 
     posts: null,
-    isUploading: false,
-    progress: null,
 
     postCursor: 5,
   };
@@ -38,22 +36,14 @@ class Posts extends React.Component {
   }
 
   _renderJoinGroup () {
-    const {auth} = this.props;
-    const {group, isJoiningGroup} = this.state;
-
-    const isUserInGroup = group.userIds.indexOf(auth.currentUser.uid) > -1;
-    if (isUserInGroup) {
-      return;
-    }
+    const {isJoiningGroup} = this.state;
 
     return (
       <div style={{marginBottom: 20}}>
         {isJoiningGroup ? (
           <span>Joining...</span>
         ) : (
-          <button onClick={this._onClickJoinGroup}>
-            <h4>join group</h4>
-          </button>
+          <button onClick={this._onClickJoinGroup}>Join group</button>
         )}
       </div>
     );
@@ -61,25 +51,19 @@ class Posts extends React.Component {
 
   render () {
     const {storage, db, auth} = this.props;
-    const {group, posts, postCursor, isUploading, progress} = this.state;
+    const {group, posts, postCursor} = this.state;
+
+    const isUserInGroup = group && group.userIds.indexOf(auth.currentUser.uid) > -1;
 
     return (
       <div className={cs.Posts}>
         <h1>
           <Link to="/">werm.world</Link>/{group ? group.name : '-----'}
         </h1>
-        {group && this._renderJoinGroup()}
-        <FileUploader
-          accept="image/*"
-          name="post"
-          randomizeFilename
-          storageRef={storage.ref('posts')}
-          onUploadStart={this._onUploadStart}
-          onUploadError={this._onUploadError}
-          onUploadSuccess={this._onUploadSuccess}
-          onProgress={this._onProgress}
-        />
-        {isUploading && <p>Progress: {progress}</p>}
+        {group && !isUserInGroup && this._renderJoinGroup()}
+        {group && isUserInGroup && (
+          <NewPost auth={auth} db={db} storage={storage} groupIds={[group.id]} />
+        )}
         <div className={cs.PostList}>
           {posts &&
             posts
@@ -138,34 +122,6 @@ class Posts extends React.Component {
       })
       .then(() => {
         this.setState({isJoiningGroup: false});
-      });
-  };
-
-  _onUploadStart = () => this.setState({isUploading: true, progress: 0});
-  _onProgress = progress => this.setState({progress});
-  _onUploadError = error => {
-    this.setState({isUploading: false});
-    console.error(error);
-  };
-  _onUploadSuccess = async filename => {
-    const {auth, db, groupId} = this.props;
-
-    this.setState({progress: null, isUploading: false});
-
-    const storageUrl = `gs://werm-pix.appspot.com/posts/${filename}`;
-
-    const userDisplayName = auth.currentUser.displayName;
-    const userId = auth.currentUser.uid;
-
-    await db
-      .collection('posts')
-      .doc()
-      .set({
-        groupId,
-        userDisplayName,
-        userId,
-        createdAt: new Date(),
-        storageUrl,
       });
   };
 }

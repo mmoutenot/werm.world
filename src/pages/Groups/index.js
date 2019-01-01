@@ -18,7 +18,7 @@ class Groups extends React.Component {
     return (
       <div className={cs.Groups}>
         <h1>werm.world</h1>
-        <img src={require('./logo.png')} alt="logo" height={60} />
+        <img src={require('../../assets/logo.png')} alt="logo" height={60} />
         {groups ? (
           <div className={cs.GroupList}>
             <h4>Your groups</h4>
@@ -27,6 +27,11 @@ class Groups extends React.Component {
                 <Link to={`/${g.id}`}>{g.name}</Link>
               </div>
             ))}
+            <Link to="/newMultiPost">
+              <button onClick={this._onClickPostMultiple}>Post to multiple</button>
+            </Link>
+            <br />
+            <br />
             <button onClick={this._onClickCreateGroup}>Create a group</button>
           </div>
         ) : (
