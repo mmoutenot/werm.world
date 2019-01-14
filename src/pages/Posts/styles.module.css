@@ -1,7 +1,17 @@
 .Posts {
-  text-align: center;
 }
 
 .PostList {
   margin-top: 1rem;
+}
+
+.PostFamily {
+  display: flex;
+  overflow-x: auto;
+  align-items: center;
+  margin: 2rem 0;
+}
+
+.PostFamily > * {
+  margin-right: 1rem;
 }

@@ -1,19 +1,29 @@
 .Post {
-  width: 30rem;
-  max-width: 100%;
-  min-height: 20rem;
   box-sizing: border-box;
-  margin: 0 auto;
+  position: relative;
+  background-color: lightslategray;
 }
 
 .PostImage {
   display: block;
   position: relative;
+  cursor: pointer;
 }
 
 .PostImage img {
-  width: 100%;
-  height: 100%;
+  width: 40rem;
+  height: 40rem;
+  object-fit: cover;
+}
+
+.PostText {
+  width: 40rem;
+  height: 40rem;
+  font-size: 2rem;
+  padding: 1rem 2rem;
+  overflow-y: auto;
+  box-sizing: border-box;
+  color: white;
 }
 
 .UnreadNote {

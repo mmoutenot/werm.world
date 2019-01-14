@@ -35,8 +35,32 @@ class Groups extends React.Component {
             <button onClick={this._onClickCreateGroup}>Create a group</button>
           </div>
         ) : (
-          <span>Loading...</span>
+          <div>Loading...</div>
         )}
+        <hr />
+        <div className={cs.Announcements}>
+          <h4>What's new?</h4>
+          <ul>
+            <li
+              onClick={() =>
+                alert(
+                  'Now you can post to multiple groups at once. Click the "Post to multiple" button on the home screen.'
+                )
+              }
+            >
+              <a href="#">Post to multiple</a>
+            </li>
+            <li
+              onClick={() =>
+                alert(
+                  'You can add werm.world to your home screen like an app. On iOS: in Safari, there is an icon at the bottom that looks like an arrow trying to get away from a square. Click it and then select "Add to Home Screen."'
+                )
+              }
+            >
+              <a href="#">Add to homescreen</a>
+            </li>
+          </ul>
+        </div>
       </div>
     );
   }

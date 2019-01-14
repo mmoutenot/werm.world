@@ -10,6 +10,7 @@ import Posts from './pages/Posts';
 import Groups from './pages/Groups';
 import NewMultiPost from './pages/NewMultiPost';
 import * as serviceWorker from './serviceWorker';
+import 'typeface-roboto-mono';
 import './index.css';
 
 var config = {

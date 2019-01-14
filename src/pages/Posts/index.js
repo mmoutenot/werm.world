@@ -14,6 +14,8 @@ class Posts extends React.Component {
     posts: null,
 
     postCursor: 5,
+
+    addPostToParentPostId: null,
   };
 
   componentDidMount () {
@@ -51,7 +53,7 @@ class Posts extends React.Component {
 
   render () {
     const {storage, db, auth} = this.props;
-    const {group, posts, postCursor} = this.state;
+    const {group, posts, postCursor, addPostToParentPostId} = this.state;
 
     const isUserInGroup = group && group.userIds.indexOf(auth.currentUser.uid) > -1;
 
@@ -66,9 +68,41 @@ class Posts extends React.Component {
         )}
         <div className={cs.PostList}>
           {posts &&
-            posts
-              .slice(0, postCursor)
-              .map(p => <Post key={p.id} post={p} storage={storage} db={db} auth={auth} />)}
+            posts.slice(0, postCursor).map(p => {
+              return (
+                <div key={p.id} className={cs.PostFamily}>
+                  <Post key={p.id} post={p} storage={storage} db={db} auth={auth} />
+                  {p.childPosts &&
+                    p.childPosts.map(childPost => (
+                      <Post
+                        key={childPost.id}
+                        post={childPost}
+                        storage={storage}
+                        db={db}
+                        auth={auth}
+                      />
+                    ))}
+                  {addPostToParentPostId === p.id ? (
+                    <NewPost
+                      auth={auth}
+                      db={db}
+                      storage={storage}
+                      groupIds={[group.id]}
+                      parentPostId={addPostToParentPostId}
+                    />
+                  ) : (
+                    <button
+                      className={cs.PostFamilyAddPostButton}
+                      onClick={() => {
+                        this.setState({addPostToParentPostId: p.id});
+                      }}
+                    >
+                      Respond
+                    </button>
+                  )}
+                </div>
+              );
+            })}
         </div>
 
         <div>~ that is all ~</div>
@@ -91,10 +125,24 @@ class Posts extends React.Component {
     return db
       .collection('posts')
       .where('groupId', '==', groupId)
-      .orderBy('createdAt', 'desc')
+      .orderBy('createdAt', 'asc')
       .onSnapshot(snapshot => {
-        let posts = [];
-        snapshot.forEach(doc => posts.push({id: doc.id, ...doc.data()}));
+        let postsById = {};
+        snapshot.forEach(doc => {
+          const post = {id: doc.id, ...doc.data()};
+          if (post.parentPostId) {
+            const parentPost = postsById[post.parentPostId] || {};
+            const existingChildPosts = parentPost.childPosts || [];
+            postsById[post.parentPostId] = {
+              ...parentPost,
+              childPosts: [...existingChildPosts, post],
+            };
+          } else {
+            postsById[doc.id] = {...postsById[doc.id], ...post};
+          }
+        });
+        const posts = Object.values(postsById).reverse();
+        console.log(posts);
         this.setState({posts});
       });
   }

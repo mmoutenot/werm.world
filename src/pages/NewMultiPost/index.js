@@ -1,6 +1,7 @@
 import React from 'react';
-import NewPost from '../../components/NewPost';
+import {Link} from 'react-router-dom';
 
+import NewPost from '../../components/NewPost';
 import cs from './styles.module.css';
 
 class NewMultiPost extends React.Component {
@@ -23,7 +24,9 @@ class NewMultiPost extends React.Component {
 
     return (
       <div className={cs.NewMultiPost}>
-        <h1>werm.world</h1>
+        <h1>
+          <Link to="/">werm.world</Link>
+        </h1>
         <img src={require('../../assets/logo.png')} alt="logo" height={60} />
         {groups ? (
           <div className={cs.GroupList}>

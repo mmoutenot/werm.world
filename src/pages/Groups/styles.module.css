@@ -1,5 +1,4 @@
 .Groups {
-  text-align: center;
 }
 
 .GroupList {
@@ -8,4 +7,14 @@
 
 .GroupListItem {
   margin: 1rem 0;
+}
+
+.Announcements {
+  display: block;
+}
+
+.Announcements ul {
+  display: inline-block;
+  margin-top: 0;
+  text-align: left;
 }

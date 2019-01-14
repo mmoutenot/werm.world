@@ -9,60 +9,72 @@ class Post extends Component {
   state = {
     notes: null,
     downloadUrl: null,
-    isMouseOver: false,
-    hasUnreadNotes: false,
+    isMouseOver: true,
+    // hasUnreadNotes: false,
   };
 
   async componentDidMount () {
     const {post, storage} = this.props;
 
-    this._listenToNotes();
+    // this._listenToNotes();
 
-    const downloadUrl = await storage.refFromURL(post.storageUrl).getDownloadURL();
-    this.setState({downloadUrl});
+    if (post.type === 'image') {
+      const downloadUrl = await storage.refFromURL(post.storageUrl).getDownloadURL();
+      this.setState({downloadUrl});
+    }
   }
 
-  _renderNotes () {
-    const {notes} = this.state;
+  // _renderNotes () {
+  //   const {notes} = this.state;
 
-    this._markNotesAsSeen();
+  //   this._markNotesAsSeen();
 
-    return (
-      <div className={cs.PostNotes}>
-        <button onClick={this._onAddNoteClick}>Add note</button>
-        {notes ? (
-          notes.map(n => (
-            <p key={n.id}>
-              {n.text}
-              <br />~ <b>{n.userDisplayName}</b> {moment(n.createdAt.toDate()).fromNow()}
-            </p>
-          ))
-        ) : (
-          <p>Loading notes...</p>
-        )}
-      </div>
-    );
-  }
+  //   return (
+  //     <div className={cs.PostNotes}>
+  //       <button onClick={this._onAddNoteClick}>Add note</button>
+  //       {notes ? (
+  //         notes.map(n => (
+  //           <p key={n.id}>
+  //             {n.text}
+  //             <br />~ <b>{n.userDisplayName}</b> {moment(n.createdAt.toDate()).fromNow()}
+  //           </p>
+  //         ))
+  //       ) : (
+  //         <p>Loading notes...</p>
+  //       )}
+  //     </div>
+  //   );
+  // }
 
   render () {
     const {post} = this.props;
-    const {notes, downloadUrl, isMouseOver, hasUnreadNotes} = this.state;
+    const {downloadUrl} = this.state;
 
     let content;
     if (post.isProcessingComplete) {
-      content = (
-        <div className={cs.PostImage}>
-          {hasUnreadNotes && <div className={cs.UnreadNote} />}
-          {isMouseOver && this._renderNotes()}
-          <img src={downloadUrl} />
-          <div className={cs.PostCredit}>
-            <b>{post.userDisplayName}</b> - {moment(post.createdAt.toDate()).format('l')}
-            <div className={cs.PostCreditNoteCount}>
-              {notes ? `${notes.length} note${notes.length > 1 ? 's' : ''}` : '- notes'}
-            </div>
+      if (post.type === 'image') {
+        content = (
+          <div className={cs.PostImage} onClick={() => window.open(downloadUrl)}>
+            <img src={downloadUrl} />
           </div>
-        </div>
-      );
+        );
+      } else if (post.type === 'song') {
+        content = (
+          <iframe
+            src={`https://open.spotify.com/embed/${post.spotifyRef
+              .split(':')
+              .slice(1)
+              .join('/')}`}
+            width={400}
+            height={400}
+            frameborder="0"
+            allowtransparency="true"
+            allow="encrypted-media"
+          />
+        );
+      } else if (post.type === 'text') {
+        content = <div className={cs.PostText}>{post.text}</div>;
+      }
     } else {
       content = <span className={cs.PostProcessing}>Processing...</span>;
     }
@@ -70,6 +82,15 @@ class Post extends Component {
     return (
       <div className={cs.Post} onMouseEnter={this._onMouseEnter} onMouseLeave={this._onMouseLeave}>
         {content}
+        <div className={cs.PostCredit}>
+          {/* {hasUnreadNotes && <div className={cs.UnreadNote} />} */}
+          <b>{post.userDisplayName}</b> - {moment(post.createdAt.toDate()).format('l')}
+          {/* <div className={cs.PostCreditNoteCount}>
+            {notes
+              ? `${notes.length} note${notes.length > 1 || notes.length == 0 ? 's' : ''}`
+              : '- notes'}
+          </div> */}
+        </div>
       </div>
     );
   }
