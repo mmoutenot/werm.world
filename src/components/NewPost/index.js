@@ -127,6 +127,10 @@ class NewPost extends React.Component {
         .concat(spotifyInput.split('/').slice(3))
         .join(':')
         .split('?')[0];
+    } else if (spotifyInput.startsWith('spotify:')) {
+      parsedRef = spotifyInput;
+    } else {
+      alert('Can\'t parse that Spotify input. Try the "url" or the "uri".');
     }
 
     this._createPost({

@@ -44,6 +44,15 @@ class Groups extends React.Component {
             <li
               onClick={() =>
                 alert(
+                  'Songs + text posts. And no more notes. Try it out! You can attach new posts onto old ones to to create a train of posts choo chooooooooo'
+                )
+              }
+            >
+              <a href="#">Posts of all sorts!</a>
+            </li>
+            <li
+              onClick={() =>
+                alert(
                   'Now you can post to multiple groups at once. Click the "Post to multiple" button on the home screen.'
                 )
               }
