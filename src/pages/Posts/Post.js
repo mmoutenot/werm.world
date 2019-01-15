@@ -9,42 +9,16 @@ class Post extends Component {
   state = {
     notes: null,
     downloadUrl: null,
-    isMouseOver: true,
-    // hasUnreadNotes: false,
   };
 
   async componentDidMount () {
     const {post, storage} = this.props;
-
-    // this._listenToNotes();
 
     if (post.type === 'image') {
       const downloadUrl = await storage.refFromURL(post.storageUrl).getDownloadURL();
       this.setState({downloadUrl});
     }
   }
-
-  // _renderNotes () {
-  //   const {notes} = this.state;
-
-  //   this._markNotesAsSeen();
-
-  //   return (
-  //     <div className={cs.PostNotes}>
-  //       <button onClick={this._onAddNoteClick}>Add note</button>
-  //       {notes ? (
-  //         notes.map(n => (
-  //           <p key={n.id}>
-  //             {n.text}
-  //             <br />~ <b>{n.userDisplayName}</b> {moment(n.createdAt.toDate()).fromNow()}
-  //           </p>
-  //         ))
-  //       ) : (
-  //         <p>Loading notes...</p>
-  //       )}
-  //     </div>
-  //   );
-  // }
 
   render () {
     const {post} = this.props;
@@ -80,16 +54,10 @@ class Post extends Component {
     }
 
     return (
-      <div className={cs.Post} onMouseEnter={this._onMouseEnter} onMouseLeave={this._onMouseLeave}>
+      <div className={cs.Post}>
         {content}
         <div className={cs.PostCredit}>
-          {/* {hasUnreadNotes && <div className={cs.UnreadNote} />} */}
           <b>{post.userDisplayName}</b> - {moment(post.createdAt.toDate()).format('l')}
-          {/* <div className={cs.PostCreditNoteCount}>
-            {notes
-              ? `${notes.length} note${notes.length > 1 || notes.length == 0 ? 's' : ''}`
-              : '- notes'}
-          </div> */}
         </div>
       </div>
     );
@@ -117,14 +85,6 @@ class Post extends Component {
         this.setState({notes, hasUnreadNotes});
       });
   }
-
-  _onMouseEnter = () => {
-    this.setState({isMouseOver: true});
-  };
-
-  _onMouseLeave = () => {
-    this.setState({isMouseOver: false});
-  };
 
   _onAddNoteClick = () => {
     const {post, db, auth} = this.props;

@@ -1,18 +1,27 @@
 .NewPost {
   border: 1px dotted black;
-  max-width: 30rem;
+  max-width: 40rem;
   padding: 0 2rem 1rem;
+  box-sizing: border-box;
 }
 
 .NewPostTypes {
   display: flex;
   align-items: center;
-  width: 30rem;
+  width: 40rem;
   margin: 1rem auto 0;
 }
 
 .NewPostUploader input {
   border: 1px dotted;
+}
+
+.NewPostInput {
+  display: flex;
+}
+
+.NewPostInput input {
+  flex: 1;
 }
 
 .NewPost textarea {

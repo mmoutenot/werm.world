@@ -11,7 +11,7 @@ const DEFAULT_STATE = {
   isUploading: false,
   progress: null,
   type: TYPE_IMAGE,
-  spotifyRef: '',
+  spotifyInput: '',
   textPostValue: '',
 };
 
@@ -20,7 +20,7 @@ class NewPost extends React.Component {
 
   render () {
     const {storage, parentPostId} = this.props;
-    const {isUploading, progress, type, spotifyRef, textPostValue} = this.state;
+    const {isUploading, progress, type, spotifyInput, textPostValue} = this.state;
 
     return (
       <div className={cs.NewPost}>
@@ -58,44 +58,46 @@ class NewPost extends React.Component {
           </div>
         </form>
         <br />
-        {type === TYPE_IMAGE && (
-          <div className={cs.NewPostUploader}>
-            <FileUploader
-              accept="image/*"
-              name="post"
-              randomizeFilename
-              storageRef={storage.ref('posts')}
-              onUploadStart={this._onUploadStart}
-              onUploadError={this._onUploadError}
-              onUploadSuccess={this._onUploadSuccess}
-              onProgress={this._onProgress}
-            />
-            {isUploading && <p>Progress: {progress}</p>}
-          </div>
-        )}
-        {type === TYPE_TEXT && (
-          <div>
-            <textarea
-              value={textPostValue}
-              onChange={e => {
-                this.setState({textPostValue: e.target.value});
-              }}
-            />
-            <button onClick={this._onClickCreateText}>It is said</button>
-          </div>
-        )}
-        {type === TYPE_SONG && (
-          <>
-            <input
-              value={spotifyRef}
-              onChange={e => {
-                this.setState({spotifyRef: e.target.value});
-              }}
-              placeholder="spotify:track:6hkKwagiF3RncJdS8xfuwC"
-            />
-            <button onClick={this._onClickCreateSong}>rewind the tape</button>
-          </>
-        )}
+        <div className={cs.NewPostInput}>
+          {type === TYPE_IMAGE && (
+            <div className={cs.NewPostUploader}>
+              <FileUploader
+                accept="image/*"
+                name="post"
+                randomizeFilename
+                storageRef={storage.ref('posts')}
+                onUploadStart={this._onUploadStart}
+                onUploadError={this._onUploadError}
+                onUploadSuccess={this._onUploadSuccess}
+                onProgress={this._onProgress}
+              />
+              {isUploading && <p>Progress: {progress}</p>}
+            </div>
+          )}
+          {type === TYPE_TEXT && (
+            <div>
+              <textarea
+                value={textPostValue}
+                onChange={e => {
+                  this.setState({textPostValue: e.target.value});
+                }}
+              />
+              <button onClick={this._onClickCreateText}>It is said</button>
+            </div>
+          )}
+          {type === TYPE_SONG && (
+            <>
+              <input
+                value={spotifyInput}
+                onChange={e => {
+                  this.setState({spotifyInput: e.target.value});
+                }}
+                placeholder="Paste uri (spotify:track:xxx) or url (https://...)"
+              />
+              <button onClick={this._onClickCreateSong}>rewind the tape</button>
+            </>
+          )}
+        </div>
       </div>
     );
   }
@@ -116,10 +118,19 @@ class NewPost extends React.Component {
   };
 
   _onClickCreateSong = () => {
-    const {spotifyRef} = this.state;
+    const {spotifyInput} = this.state;
+
+    let parsedRef;
+    // https://open.spotify.com/track/3kMY4HJ3EQZbJdhDYOBjuA?si=Mp7UrKOrQVq1zElncZLiZw
+    if (spotifyInput.startsWith('https')) {
+      parsedRef = ['spotify']
+        .concat(spotifyInput.split('/').slice(3))
+        .join(':')
+        .split('?')[0];
+    }
 
     this._createPost({
-      spotifyRef,
+      spotifyRef: parsedRef,
       isProcessingComplete: true,
       type: TYPE_SONG,
     });
@@ -159,7 +170,7 @@ class NewPost extends React.Component {
         .set(data);
     }
 
-    this.setState({DEFAULT_STATE});
+    this.setState(DEFAULT_STATE);
   };
 }
 
